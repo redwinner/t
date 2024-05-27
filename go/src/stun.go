@@ -12,7 +12,7 @@ func sendStun(socket *net.UDPConn, stunData []byte) {
         if err != nil {
             fmt.Println("发送数据失败, err:", err)
         }
-        time.Sleep(1000000000)
+        time.Sleep(time.Second)
     }
 }
 
