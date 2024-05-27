@@ -1,9 +1,20 @@
 package main
 
 import (
-    "net"
     "fmt"
+    "net"
+    "time"
 )
+
+func sendStun(socket *net.UDPConn, stunData []byte) {
+    for {
+        _, err := socket.Write(stunData) // 发送数据
+        if err != nil {
+            fmt.Println("发送数据失败, err:", err)
+        }
+        time.Sleep(1000000000)
+    }
+}
 
 func main() {
     socket, err := net.DialUDP("udp", nil, &net.UDPAddr{
@@ -11,12 +22,12 @@ func main() {
         Port: 8010,
     })
     if err != nil {
-        fmt.Println("连接服务端失败，err:", err)
+        fmt.Println("连接服务端失败, err:", err)
         return
     }
     defer socket.Close()
 
-    var stunData = []byte {
+    var stunData = []byte{
         0x00, 0x01, 0x00, 0x50, 0x21, 0x12, 0xA4, 0x42, 0x5A, 0x69, 0x54, 0x38, 0x76, 0x41, 0x37, 0x72,
         0x2F, 0x72, 0x63, 0x36, 0x00, 0x06, 0x00, 0x09, 0x52, 0x65, 0x64, 0x30, 0x3A, 0x77, 0x69, 0x6E,
         0x65, 0x00, 0x00, 0x00, 0xC0, 0x57, 0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x80, 0x2A, 0x00, 0x08,
@@ -26,16 +37,15 @@ func main() {
         0x9A, 0x7A, 0xC6, 0x1E,
     }
 
-    _, err = socket.Write(stunData) // 发送数据
-    if err != nil {
-        fmt.Println("发送数据失败, err:", err)
-        return
-    }
+    go sendStun(socket, stunData)
+
     data := make([]byte, 4096)
-    n, remoteAddr, err := socket.ReadFromUDP(data) // 接收数据
-    if err != nil {
-        fmt.Println("接收数据失败, err:", err)
-        return
+    for {
+        n, remoteAddr, err := socket.ReadFromUDP(data) // 接收数据
+        if err != nil {
+            fmt.Println("接收数据失败, err:", err)
+            return
+        }
+        fmt.Printf("recv:%v addr:%v count:%v\n", string(data[:n]), remoteAddr, n)
     }
-    fmt.Printf("recv:%v addr:%v count:%v\n", string(data[:n]), remoteAddr, n)
 }
