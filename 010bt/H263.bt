@@ -1,0 +1,77 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: H263.bt 
+//   Authors: shs
+//   Version: 0.1
+//   Purpose: Identify sections of an H263 video file.
+//  Category: Video
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//   0.1     2021-06-23 shs: Initial release.
+//------------------------------------------------
+
+typedef struct {
+    local int64 pos = FTell();
+    local int a = ReadUByte(pos++);
+    local int b = ReadUByte(pos++);
+
+    while (pos < FileSize()) {
+        if (a == 0 && b == 0) {
+            break;
+        }
+        a = b;
+        b = ReadUByte(pos++);
+    }
+    FSeek(pos);
+    pos += 2;
+    a = ReadUByte(pos++);
+    b = ReadUByte(pos++);
+
+    local int len = 0;
+    while (pos < FileSize()) {
+        if (a == 0 && b == 0 ) {
+            break;
+        }
+        len ++;
+        a = b;
+        b = ReadUByte(pos++);
+    }
+    union {
+        UBYTE nalu[len+(pos == FileSize() ? 4 : 2)] <hidden=true>;
+        struct {
+ /** H.263 bit-stream header */
+ 
+   	UBYTE psc:6;            /**< Picture Start Code (PSC)              */
+    UBYTE temp_ref1:2;
+   	UBYTE temp_ref:6;            /**< Temporal Reference              */
+   	UBYTE r:2;            /**< Temporal Reference              */
+
+
+   	UBYTE split_scr:1;        /**< Split Screen Indicator          */
+   	UBYTE doc_camera:1;       /**< Document Camera Indicator       */
+   	UBYTE pic_frz_rel:1;      /**< Full Picture Freeze Release     */
+   	UBYTE src_fmt:3;          /**< Source Format. 3=CIF            */
+   	UBYTE pic_type:1;         /**< Picture Coding Type. 0=I, 1=P   */
+   	UBYTE umv:1;              /**< Unrestricted Motion Vector mode */
+   	UBYTE sac:1;              /**< Syntax-based Arithmetic Coding  */
+   	UBYTE apm:1;              /**< Advanced Prediction mode        */
+   	UBYTE pb:1;               /**< PB-frames mode                  */
+   	UBYTE pquant:5;           /**< Quantizer Information           */
+   	UBYTE cpm:1;              /**< Continuous Presence Multipoint  */
+   	UBYTE pei:1;              /**< Extra Insertion Information     */
+   	/* H.263 bit-stream ... */
+ 
+       if(pic_type == 0 ) {Printf("Got I frame Pos: %d \n",pos - len );}
+       Printf("Got Len: %d \n",len );
+        } H263_FRAME_HEADER;
+    } NAL;
+} NALU;
+
+BigEndian();
+
+while(!FEof()) {
+    NALU nalu;
+}
+
