@@ -81,7 +81,7 @@ func onMessage(connect *websocket.Conn) {
         case websocket.BinaryMessage:
             fmt.Println(messageData)
         case websocket.CloseMessage:
-        case websocket.PingMessage:/
+        case websocket.PingMessage:
         case websocket.PongMessage:
         default:
         }
