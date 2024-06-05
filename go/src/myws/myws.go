@@ -40,6 +40,8 @@ func main() {
         if (ret < 0) {
             time.Sleep(time.Second * 200);
             continue;
+        } else if (ret == 0) {
+            continue
         }
 
         switch commandid[0] {
