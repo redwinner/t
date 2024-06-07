@@ -23,7 +23,7 @@ func main() {
     go onMessage(connect)
 
     connect.WriteMessage(websocket.TextMessage, []byte("{\"janus\":\"create\"," +
-        "\"transaction\":\"J1N0by6A3UUK\",\"sdktag\":\"BRTC.go.SDK V0.0.1\",\"uri\":\"ws://r.redwinner.cn:8800/brtc\"," +
+        "\"transaction\":\"J1N0by6A3UUK\",\"sdktag\":\"BRTC.Go.SDK V0.0.1\",\"uri\":\"ws://r.redwinner.cn:8800/brtc\"," +
         "\"userevent\":true,\"sessionevent\":true}"))
 
     for {
