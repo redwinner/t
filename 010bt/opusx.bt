@@ -1,0 +1,52 @@
+//------------------------------------------------
+//--- 010 Editor v4.0.4 Binary Template
+//
+//      File: opusx.bt
+//   Authors: redwinner.cn
+//   Version: 0.1
+//   Purpose: Parses the ogg container format.
+//  Category: Audio
+// File Mask: *.opusx
+//  ID Bytes: 
+//   History: 
+//   1.0   redwinner: Initial release.
+//------------------------------------------------
+
+// opusx files can be quite large. Don't read more the 1000 pages.
+local uint MAXPAGES = 10000;
+
+typedef struct {
+    struct {
+	    uchar   config : 5;
+	    uchar   s : 1; // stero:1, mono:0
+	    uchar   c : 2; // one frame:0, two frames:1, two frames(diff length):2, some frames:3 
+    } TOC;
+    
+    if (TOC.c == 3) { //
+        struct {
+	        uchar   v : 1; // VBR:1, CBR:0
+	        uchar   p : 1; // pad
+	        uchar   M : 6 <comment="frame count">; // frame count
+        } fct;
+    } else {
+        UBYTE pad  <bgcolor=cLtGray>;
+    }
+
+    UBYTE  Data[78] <bgcolor=cLtGray>;
+} FRAME;
+
+
+BigEndian(); 
+
+local uint currpage = 0;
+while( !FEof() )
+{
+    currpage++;
+    if (MAXPAGES < currpage) 
+    {
+        Printf("Max Pages of %d reached!\n", maxpages);
+        return 0;
+    }
+
+    FRAME frame <bgcolor=cLtBlue>;
+}
